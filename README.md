@@ -16,7 +16,7 @@ A decentralized ATM built on Ethereum, enabling users to deposit and withdraw Et
     In the "Networks" tab, click on "Add Network".
     Fill in the following details:
         Network Name: hardhat-test-network
-        RPC URL: http://127.0.0.1:8545/
+        RPC URL: http://localhost:3000
         Chain ID: 31337
         Currency Symbol: GO or ETH
     Click on "Save" to add the Hardhat network to MetaMask.
@@ -35,3 +35,9 @@ A decentralized ATM built on Ethereum, enabling users to deposit and withdraw Et
 - Simple user interface to manage deposits and withdrawals.
 - Real-time interaction with Ethereum smart contract using `ethers.js`.
 - Uses MetaMask for easy Ethereum wallet integration.
+
+## Authors
+Metacrafter Chris_Narumi.
+
+## License
+This project is licensed under the MIT License. See the LICENSE.md file for details.
