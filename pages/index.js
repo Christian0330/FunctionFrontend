@@ -36,14 +36,13 @@ export default function HomePage() {
 
   const connectAccount = async () => {
     if (!ethWallet) {
-      alert("Please install MetaMask to connect to the ATM.");
+      alert("MetaMask wallet is required to connect");
       return;
     }
 
     const accounts = await ethWallet.request({ method: "eth_requestAccounts" });
     handleAccount(accounts);
 
-    // Once wallet is set, get reference to our deployed contract
     getATMContract();
   };
 
@@ -68,7 +67,6 @@ export default function HomePage() {
       let tx = await atm.deposit(amount);
       await tx.wait();
       getBalance();
-      alert(`Successfully deposited ${depositAmount} ETH!`);
     }
   };
 
@@ -78,19 +76,20 @@ export default function HomePage() {
       let tx = await atm.withdraw(amount);
       await tx.wait();
       getBalance();
-      alert(`Successfully withdrew ${withdrawAmount} ETH!`);
     }
   };
 
   const initUser = () => {
-    // Check if the user has MetaMask
     if (!ethWallet) {
-      return <p>Please install MetaMask to use this ATM service.</p>;
+      return <p>Please install Metamask in order to use this ATM.</p>;
     }
 
-    // Check if the user is connected
     if (!account) {
-      return <button className="btn-connect" onClick={connectAccount}>Connect to MetaMask</button>;
+      return (
+        <button className="button" onClick={connectAccount}>
+          Please connect your Metamask wallet
+        </button>
+      );
     }
 
     if (balance === undefined) {
@@ -98,42 +97,33 @@ export default function HomePage() {
     }
 
     return (
-      <div className="user-info">
-        <p><strong>Connected Wallet:</strong> {account}</p>
+      <div className="account-section">
+        <p><strong>Your Account:</strong> {account}</p>
+        <p><strong>Your Balance:</strong> {balance && ethers.utils.formatEther(balance)} ETH</p>
 
-        {/* Highlight the balance section */}
-        <div className="balance-container">
-          <p className="bold-balance">
-            <strong>Your Current Balance:</strong> {balance && ethers.utils.formatEther(balance)} ETH
-          </p>
+        <div className="action-section">
+          <div className="input-group">
+            <input
+              type="number"
+              value={depositAmount}
+              onChange={(e) => setDepositAmount(e.target.value)}
+              placeholder="Enter deposit amount"
+              className="input"
+            />
+            <button className="button" onClick={deposit}>Deposit</button>
+          </div>
+
+          <div className="input-group">
+            <input
+              type="number"
+              value={withdrawAmount}
+              onChange={(e) => setWithdrawAmount(e.target.value)}
+              placeholder="Enter withdraw amount"
+              className="input"
+            />
+            <button className="button" onClick={withdraw}>Withdraw</button>
+          </div>
         </div>
-
-        {/* Deposit section */}
-        <div className="input-section">
-          <input
-            className="input-field"
-            type="number"
-            value={depositAmount}
-            onChange={(e) => setDepositAmount(e.target.value)}
-            placeholder="Enter deposit amount"
-          />
-          <button className="btn-action" onClick={deposit}><strong>Deposit Funds</strong></button>
-        </div>
-
-        {/* Withdraw section */}
-        <div className="input-section">
-          <input
-            className="input-field"
-            type="number"
-            value={withdrawAmount}
-            onChange={(e) => setWithdrawAmount(e.target.value)}
-            placeholder="Enter withdraw amount"
-          />
-          <button className="btn-action" onClick={withdraw}><strong>Withdraw Funds</strong></button>
-        </div>
-
-        {/* Optionally, add a logout or disconnect button */}
-        <button className="btn-disconnect" onClick={() => setAccount(undefined)}>Disconnect</button>
       </div>
     );
   };
@@ -145,136 +135,62 @@ export default function HomePage() {
   return (
     <main className="container">
       <header>
-        <h1>Welcome to the Metacrafters ATM</h1>
-        <p>Manage your Ethereum balance directly from your wallet.</p>
+        <h1>Welcome to Mini ATM!</h1>
       </header>
       {initUser()}
+      <footer>
+        <p>&copy; 2024 Metacrafters. All rights reserved.</p>
+      </footer>
+
       <style jsx>{`
         .container {
+          text-align: center;
+          background-color: #FFDAB9;
+          height: 100vh;
           display: flex;
           flex-direction: column;
-          align-items: center;
           justify-content: center;
-          text-align: center;
-          font-family: 'Arial', sans-serif;
-          background-color: #ffccbc; /* Peach Background */
-          min-height: 100vh;
-          padding: 20px;
+          align-items: center;
+          font-family: Arial, sans-serif;
         }
-
-        h1 {
-          font-size: 3rem;
-          color: #2c3e50;
-          margin-bottom: 10px;
-        }
-
-        p {
-          font-size: 1.2rem;
-          color: #34495e;
+        header {
           margin-bottom: 20px;
         }
-
-        .user-info {
-          margin-top: 20px;
+        .account-section {
           padding: 20px;
-          background-color: #ffffff;
+          background: white;
           border-radius: 10px;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-          width: 100%;
-          max-width: 450px;
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+          width: 300px;
         }
-
-        .balance-container {
-          background-color: #ecf0f1; /* Light grey highlight */
-          border-radius: 8px;
-          padding: 15px;
-          margin-bottom: 25px;
+        .action-section {
+          margin-top: 20px;
         }
-
-        .bold-balance {
-          font-size: 1.7rem;
+        .input-group {
+          margin-bottom: 15px;
+        }
+        .input {
+          width: 70%;
+          padding: 8px;
+          margin-right: 10px;
+          border: 1px solid #ccc;
+          border-radius: 5px;
+        }
+        .button {
+          padding: 8px 12px;
+          background-color: #FF7F50;
+          color: white;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
           font-weight: bold;
-          color: #e74c3c; /* Red for emphasis */
         }
-
-        .input-section {
-          margin-bottom: 20px;
+        .button:hover {
+          background-color: #FF4500;
         }
-
-        .input-field {
-          width: 100%;
-          padding: 12px;
-          margin: 10px 0;
-          border: 1px solid #ddd;
-          border-radius: 8px;
-          font-size: 1rem;
-        }
-
-        .input-field:focus {
-          border-color: #3498db;
-          outline: none;
-        }
-
-        .btn-action {
-          width: 100%;
-          padding: 12px;
-          background-color: #3498db;
-          color: white;
-          border: none;
-          border-radius: 8px;
-          font-size: 1.2rem;
-          cursor: pointer;
-          transition: background-color 0.3s ease;
-        }
-
-        .btn-action:hover {
-          background-color: #2980b9;
-        }
-
-        .btn-connect {
-          padding: 12px;
-          background-color: #2ecc71;
-          color: white;
-          font-size: 1.2rem;
-          border: none;
-          border-radius: 8px;
-          cursor: pointer;
-          transition: background-color 0.3s ease;
-        }
-
-        .btn-connect:hover {
-          background-color: #27ae60;
-        }
-
-        .btn-disconnect {
-          padding: 12px;
-          background-color: #e74c3c;
-          color: white;
-          font-size: 1.2rem;
-          border: none;
-          border-radius: 8px;
-          cursor: pointer;
-          transition: background-color 0.3s ease;
-          margin-top: 15px;
-        }
-
-        .btn-disconnect:hover {
-          background-color: #c0392b;
-        }
-
-        .footer {
-          margin-top: 40px;
-          color: #888;
-          font-size: 0.9rem;
-        }
-
-        .footer a {
-          color: #3498db;
-          text-decoration: none;
-        }
-
-        .footer a:hover {
-          text-decoration: underline;
+        footer {
+          margin-top: 20px;
+          font-size: 0.8rem;
         }
       `}</style>
     </main>
